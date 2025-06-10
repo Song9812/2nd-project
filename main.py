@@ -2,9 +2,7 @@ import streamlit as st
 import folium
 from streamlit_folium import st_folium
 
-# 도시별 관광지 데이터 (영상 링크 및 근처 명소 정보 포함)
-# 'video_url'은 유튜브 영상의 임베드 링크나 직접적인 MP4 파일 링크여야 합니다.
-# 'nearby'는 해당 관광지 근처에 방문하기 좋은 다른 명소들입니다.
+# 도시별 관광지 데이터 (영상 링크, 이미지, 근처 명소 정보 포함)
 cities = {
     "파리": {
         "에펠탑": {
@@ -19,7 +17,8 @@ cities = {
 * **잔디밭 피크닉:** 에펠탑 아래 샹 드 마르스 공원에서 여유롭게 피크닉을 즐기며 에펠탑의 웅장함을 감상해보세요.
 * **팁:** 미리 온라인으로 티켓을 예매하면 긴 줄을 피할 수 있어요!
 """,
-            "video_url": "https://www.youtube.com/watch?v=g8s1P6w_zLw", # 실제 에펠탑 관련 유튜브 영상 예시
+            "video_url": "http://www.youtube.com/watch?v=CGlUDVvJPco",  # 변경된 에펠탑 관련 유튜브 영상 링크
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Tour_Eiffel_Wikimedia_Commons_%281%29.jpg/1200px-Tour_Eiffel_Wikimedia_Commons_%281%29.jpg",  # 에펠탑 이미지 URL
             "nearby": ["샹 드 마르스 공원", "사이요 궁", "트로카데로 광장"]
         },
         "루브르 박물관": {
@@ -36,7 +35,8 @@ cities = {
 
 **팁:** 박물관이 워낙 넓으니, 미리 보고 싶은 작품을 정해 동선을 짜는 것이 좋아요!
 """,
-            "video_url": "https://www.youtube.com/watch?v=AWcQz-63q54", # 실제 루브르 박물관 관련 유튜브 영상 예시
+            "video_url": "http://www.youtube.com/watch?v=CZ0oZPO-10E",  # 변경된 루브르 박물관 관련 유튜브 영상 링크
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/The_Louvre_Museum_in_Paris.jpg/1200px-The_Louvre_Museum_in_Paris.jpg",  # 루브르 박물관 이미지 URL
             "nearby": ["튈르리 정원", "오르세 미술관", "팔레 루아얄"]
         },
         "베르사유 궁전": {
@@ -51,7 +51,8 @@ cities = {
 * **정원 (Jardins de Versailles):** 섬세하게 가꿔진 넓은 정원을 산책하거나, 보트를 타는 등 다양한 방법으로 즐길 수 있습니다. 분수쇼도 놓치지 마세요!
 * **트리아농 궁전 (Grand Trianon & Petit Trianon):** 마리 앙투아네트가 즐겨 찾던 작은 궁전들도 방문해보세요.
 """,
-            "video_url": "https://www.youtube.com/watch?v=F0J_J9eJc8E", # 실제 베르사유 궁전 관련 유튜브 영상 예시
+            "video_url": "http://www.youtube.com/watch?v=EC8FR1SkOJg",  # 변경된 베르사유 궁전 관련 유튜브 영상 링크
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Versailles_Chateau.jpg/1200px-Versailles_Chateau.jpg",  # 베르사유 궁전 이미지 URL
             "nearby": ["트리아농 궁전", "마리 앙투아네트의 영지", "베르사유 정원 오랑주리"]
         }
     },
@@ -68,7 +69,8 @@ cities = {
 * **밀물과 썰물:** 방문 시기에 따라 몽생미셸이 섬이 되거나 육지와 연결되는 모습을 볼 수 있습니다. 썰물 때는 갯벌을 걷는 체험도 가능해요!
 * **야경:** 밤이 되면 조명이 켜져 더욱 신비롭고 아름다운 모습을 감상할 수 있습니다.
 """,
-            "video_url": "https://www.youtube.com/watch?v=S7bW7gL1L-I", # 실제 몽생미셸 관련 유튜브 영상 예시
+            "video_url": "http://www.youtube.com/watch?v=iwgYfrNGVms",  # 변경된 몽생미셸 관련 유튜브 영상 링크
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Mont_St_Michel_3.jpg/1200px-Mont_St_Michel_3.jpg",  # 몽생미셸 이미지 URL
             "nearby": ["몽생미셸 만", "아브랑슈", "캉칼"]
         }
     },
@@ -85,7 +87,8 @@ cities = {
 * **구시가지 (Vieux Nice):** 좁은 골목길을 따라 아기자기한 상점과 레스토랑, 카페들이 즐비합니다. 신선한 해산물 요리도 꼭 맛보세요!
 * **마세나 광장 (Place Masséna):** 니스의 중심 광장으로, 독특한 조형물과 아름다운 건축물들이 어우러져 있습니다.
 """,
-            "video_url": "https://www.youtube.com/watch?v=vV_R1o0L43Q", # 실제 니스 관련 유튜브 영상 예시
+            "video_url": "http://www.youtube.com/watch?v=2t9u4ZPYGOk",  # 변경된 니스 관련 유튜브 영상 링크
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Nice_France_Promenade_des_Anglais.jpg/1200px-Nice_France_Promenade_des_Anglais.jpg",  # 니스 이미지 URL
             "nearby": ["빌 프랑슈 쉬르 메르", "에즈 빌리지", "마티스 미술관"]
         },
         "칸": {
@@ -98,9 +101,10 @@ cities = {
 **칸에서 꼭 해봐야 할 것!**
 * **레드 카펫 밟기 (Palais des Festivals et des Congrès):** 칸 국제영화제가 열리는 영화궁 앞에서 스타들처럼 레드 카펫을 밟아보는 특별한 경험을 해보세요!
 * **크루아제트 거리 (La Croisette):** 고급 부티크와 호텔들이 늘어선 해변 산책로입니다. 지중해의 풍경을 감상하며 여유로운 시간을 보내보세요.
-* **레렝 군도 (Îles de Lérins)::** 페리를 타고 가까운 레렝 군도로 가서 자연 속에서 평화로운 시간을 보내거나, '철가면'의 전설이 깃든 생트 마르그리트 섬을 방문해보세요.
+* **레렝 군도 (Îles de Lérins):** 페리를 타고 가까운 레렝 군도로 가서 자연 속에서 평화로운 시간을 보내거나, '철가면'의 전설이 깃든 생트 마르그리트 섬을 방문해보세요.
 """,
-            "video_url": "https://www.youtube.com/watch?v=S0Tq4293N8g", # 실제 칸 관련 유튜브 영상 예시
+            "video_url": "http://www.youtube.com/watch?v=Ob2-tYdea9M",  # 변경된 칸 관련 유튜브 영상 링크
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Cannes_Film_Festival_2010.jpg/1200px-Cannes_Film_Festival_2010.jpg",  # 칸 이미지 URL
             "nearby": ["레렝 군도", "그라스", "앙티브"]
         }
     }
@@ -122,7 +126,7 @@ city_names = list(cities.keys())
 selected_city = st.sidebar.selectbox(
     "어떤 도시로 떠나고 싶으신가요?",
     city_names,
-    index=0 # 기본값으로 첫 번째 도시 선택
+    index=0  # 기본값으로 첫 번째 도시 선택
 )
 
 # 선택한 도시의 관광지 목록
@@ -130,7 +134,7 @@ spots_in_city = list(cities.get(selected_city, {}).keys())
 selected_spot = st.sidebar.selectbox(
     f"{selected_city}의 어떤 관광지를 보고 싶으신가요?",
     spots_in_city,
-    index=0 # 기본값으로 첫 번째 관광지 선택
+    index=0  # 기본값으로 첫 번째 관광지 선택
 )
 
 # 선택된 관광지가 있는지 확인하고 정보 표시
@@ -139,6 +143,7 @@ if selected_spot and selected_city in cities and selected_spot in cities.get(sel
     lat, lon = spot_info["location"]
     description = spot_info["description"]
     video_url = spot_info.get("video_url")
+    image_url = spot_info.get("image_url")
     nearby_spots = spot_info.get("nearby", [])
 
     # 메인 콘텐츠 영역: 정보, 영상, 근처 명소(왼쪽)와 지도(오른쪽)
@@ -148,21 +153,17 @@ if selected_spot and selected_city in cities and selected_spot in cities.get(sel
         st.subheader(f"✨ 여러분이 선택한 곳은 바로... **{selected_spot}** 입니다!")
         st.markdown(description)
 
+        # 관련 이미지 표시
+        if image_url:
+            st.image(image_url, caption=selected_spot, use_column_width=True)
+
         # 관련 영상 표시
         if video_url:
             st.subheader("🎬 관련 영상")
             st.video(video_url)
 
-        # 근처 명소 추천
-        if nearby_spots:
-            st.subheader("📍 놓치면 아쉬운 근처 명소")
-            for spot in nearby_spots:
-                st.markdown(f"- {spot}")
-
-        st.markdown(f"**😊 {selected_spot}와 주변 명소에서 즐거운 시간을 보내세요!**")
-
     with col2:
-        st.subheader(f"🗺️ **{selected_spot}** 와 근처 명소 위치 (참고)")
+        st.subheader(f"🗺️ **{selected_spot}** 와 근처 명소")
         # Folium 지도 생성
         m = folium.Map(location=[lat, lon], zoom_start=12)
 
@@ -178,8 +179,8 @@ if selected_spot and selected_city in cities and selected_spot in cities.get(sel
         # 실제 근처 명소의 정확한 위치 정보를 데이터에 추가하면 더욱 정확한 지도 표시가 가능합니다.
         for i, spot in enumerate(nearby_spots):
             # 메인 관광지 근처에 마커를 임의로 배치하여 시각적으로 구분
-            nearby_lat = lat + (i + 1) * 0.005 * (1 if i % 2 == 0 else -1) # 위도 살짝 조절
-            nearby_lon = lon + (i + 1) * 0.005 * (1 if i % 3 == 0 else -1) # 경도 살짝 조절
+            nearby_lat = lat + (i + 1) * 0.005 * (1 if i % 2 == 0 else -1)  # 위도 살짝 조절
+            nearby_lon = lon + (i + 1) * 0.005 * (1 if i % 3 == 0 else -1)  # 경도 살짝 조절
             folium.Marker(
                 location=[nearby_lat, nearby_lon],
                 tooltip=spot,
@@ -189,6 +190,14 @@ if selected_spot and selected_city in cities and selected_spot in cities.get(sel
 
         # Streamlit에 Folium 지도 렌더링
         st_folium(m, width=700, height=600)
+
+        # 근처 명소 목록 표시 (지도와 같은 column에 배치)
+        if nearby_spots:
+            st.subheader("📍 놓치면 아쉬운 근처 명소")
+            for spot in nearby_spots:
+                st.markdown(f"- {spot}")
+
+        st.markdown(f"**😊 {selected_spot}와 주변 명소에서 즐거운 시간을 보내세요!**")
 
 else:
     st.warning("선택한 도시 또는 관광지 정보가 없습니다. 도시와 관광지를 선택해주세요.")
