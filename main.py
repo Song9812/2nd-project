@@ -2,8 +2,9 @@ import streamlit as st
 import folium
 from streamlit_folium import st_folium
 
-# 도시별 관광지 데이터
-# 각 관광지에 대한 설명을 더 자세하고 친절하게 작성했습니다.
+# 도시별 관광지 데이터 (영상 링크 및 근처 명소 정보 포함)
+# 'video_url'은 유튜브 영상의 임베드 링크나 직접적인 MP4 파일 링크여야 합니다.
+# 'nearby'는 해당 관광지 근처에 방문하기 좋은 다른 명소들입니다.
 cities = {
     "파리": {
         "에펠탑": {
@@ -17,7 +18,9 @@ cities = {
 * **전망대:** 에펠탑에 올라 파리 시내를 한눈에 담아보세요. 특히 해 질 녘 노을과 야경은 정말 감동적이에요!
 * **잔디밭 피크닉:** 에펠탑 아래 샹 드 마르스 공원에서 여유롭게 피크닉을 즐기며 에펠탑의 웅장함을 감상해보세요.
 * **팁:** 미리 온라인으로 티켓을 예매하면 긴 줄을 피할 수 있어요!
-"""
+""",
+            "video_url": "https://www.youtube.com/watch?v=g8s1P6w_zLw", # 실제 에펠탑 관련 유튜브 영상 예시
+            "nearby": ["샹 드 마르스 공원", "사이요 궁", "트로카데로 광장"]
         },
         "루브르 박물관": {
             "location": [48.8606, 2.3376],
@@ -32,7 +35,9 @@ cities = {
 * **사모트라케의 니케 (Winged Victory of Samothrace):** 박물관 중앙 계단에 우뚝 솟아 있는 승리의 여신상입니다.
 
 **팁:** 박물관이 워낙 넓으니, 미리 보고 싶은 작품을 정해 동선을 짜는 것이 좋아요!
-"""
+""",
+            "video_url": "https://www.youtube.com/watch?v=AWcQz-63q54", # 실제 루브르 박물관 관련 유튜브 영상 예시
+            "nearby": ["튈르리 정원", "오르세 미술관", "팔레 루아얄"]
         },
         "베르사유 궁전": {
             "location": [48.8049, 2.1204],
@@ -45,7 +50,9 @@ cities = {
 * **거울의 방 (Galerie des Glaces):** 화려한 샹들리에와 거울로 장식된 이 방은 눈부신 아름다움에 감탄을 자아내게 할 거예요.
 * **정원 (Jardins de Versailles):** 섬세하게 가꿔진 넓은 정원을 산책하거나, 보트를 타는 등 다양한 방법으로 즐길 수 있습니다. 분수쇼도 놓치지 마세요!
 * **트리아농 궁전 (Grand Trianon & Petit Trianon):** 마리 앙투아네트가 즐겨 찾던 작은 궁전들도 방문해보세요.
-"""
+""",
+            "video_url": "https://www.youtube.com/watch?v=F0J_J9eJc8E", # 실제 베르사유 궁전 관련 유튜브 영상 예시
+            "nearby": ["트리아농 궁전", "마리 앙투아네트의 영지", "베르사유 정원 오랑주리"]
         }
     },
     "노르망디": {
@@ -60,7 +67,9 @@ cities = {
 * **수도원 탐방:** 바다 위에 홀로 솟아 있는 수도원 내부를 탐방하며 중세 건축의 아름다움을 느껴보세요.
 * **밀물과 썰물:** 방문 시기에 따라 몽생미셸이 섬이 되거나 육지와 연결되는 모습을 볼 수 있습니다. 썰물 때는 갯벌을 걷는 체험도 가능해요!
 * **야경:** 밤이 되면 조명이 켜져 더욱 신비롭고 아름다운 모습을 감상할 수 있습니다.
-"""
+""",
+            "video_url": "https://www.youtube.com/watch?v=S7bW7gL1L-I", # 실제 몽생미셸 관련 유튜브 영상 예시
+            "nearby": ["몽생미셸 만", "아브랑슈", "캉칼"]
         }
     },
     "남프랑스 (코트다쥐르)": {
@@ -75,7 +84,9 @@ cities = {
 * **프롬나드 데 장글레 (Promenade des Anglais):** 니스의 상징인 해변 산책로를 따라 걸으며 지중해의 아름다움을 만끽해보세요. 자전거를 타거나 조깅을 하기에도 좋습니다.
 * **구시가지 (Vieux Nice):** 좁은 골목길을 따라 아기자기한 상점과 레스토랑, 카페들이 즐비합니다. 신선한 해산물 요리도 꼭 맛보세요!
 * **마세나 광장 (Place Masséna):** 니스의 중심 광장으로, 독특한 조형물과 아름다운 건축물들이 어우러져 있습니다.
-"""
+""",
+            "video_url": "https://www.youtube.com/watch?v=vV_R1o0L43Q", # 실제 니스 관련 유튜브 영상 예시
+            "nearby": ["빌 프랑슈 쉬르 메르", "에즈 빌리지", "마티스 미술관"]
         },
         "칸": {
             "location": [43.5516, 7.0177],
@@ -87,8 +98,10 @@ cities = {
 **칸에서 꼭 해봐야 할 것!**
 * **레드 카펫 밟기 (Palais des Festivals et des Congrès):** 칸 국제영화제가 열리는 영화궁 앞에서 스타들처럼 레드 카펫을 밟아보는 특별한 경험을 해보세요!
 * **크루아제트 거리 (La Croisette):** 고급 부티크와 호텔들이 늘어선 해변 산책로입니다. 지중해의 풍경을 감상하며 여유로운 시간을 보내보세요.
-* **레렝 군도 (Îles de Lérins):** 페리를 타고 가까운 레렝 군도로 가서 자연 속에서 평화로운 시간을 보내거나, '철가면'의 전설이 깃든 생트 마르그리트 섬을 방문해보세요.
-"""
+* **레렝 군도 (Îles de Lérins)::** 페리를 타고 가까운 레렝 군도로 가서 자연 속에서 평화로운 시간을 보내거나, '철가면'의 전설이 깃든 생트 마르그리트 섬을 방문해보세요.
+""",
+            "video_url": "https://www.youtube.com/watch?v=S0Tq4293N8g", # 실제 칸 관련 유튜브 영상 예시
+            "nearby": ["레렝 군도", "그라스", "앙티브"]
         }
     }
 }
@@ -96,11 +109,11 @@ cities = {
 # Streamlit 앱 구성
 st.set_page_config(page_title="🇫🇷 프랑스 주요 관광지 가이드", layout="wide", initial_sidebar_state="expanded")
 
-st.title("🇫🇷 프랑스 주요 관광지, 친절하고 자세한 가이드!")
+st.title("🇫🇷 프랑스 주요 관광지, 영상과 함께 더 자세히 알아보기!")
 st.markdown("""
-안녕하세요! 아름다운 프랑스의 주요 관광지들을 여러분께 아주 친절하고 자세하게 소개해 드릴게요.
-원하는 도시와 관광지를 선택하시면, 그곳의 매력과 함께 지도에서 위치를 확인할 수 있답니다.
-자, 그럼 프랑스 여행을 떠나볼까요?
+안녕하세요! 아름다운 프랑스의 주요 관광지들을 더욱 생생하게 경험할 수 있도록, 관련 영상과 근처 추천 명소를 추가했어요.
+원하는 도시와 관광지를 선택하시면, 그곳의 매력적인 영상과 함께 주변의 놓치면 아쉬운 명소들을 함께 안내해 드립니다.
+프랑스 여행 계획을 더욱 풍성하게 만들어보세요!
 """)
 
 # 사이드바에서 도시 선택
@@ -113,52 +126,72 @@ selected_city = st.sidebar.selectbox(
 )
 
 # 선택한 도시의 관광지 목록
-spots_in_city = list(cities[selected_city].keys())
+spots_in_city = list(cities.get(selected_city, {}).keys())
 selected_spot = st.sidebar.selectbox(
     f"{selected_city}의 어떤 관광지를 보고 싶으신가요?",
     spots_in_city,
     index=0 # 기본값으로 첫 번째 관광지 선택
 )
 
-# 관광지 정보 가져오기
-spot_info = cities[selected_city][selected_spot]
-lat, lon = spot_info["location"]
-description = spot_info["description"]
+# 선택된 관광지가 있는지 확인하고 정보 표시
+if selected_spot and selected_city in cities and selected_spot in cities.get(selected_city, {}):
+    spot_info = cities.get(selected_city, {}).get(selected_spot)
+    lat, lon = spot_info["location"]
+    description = spot_info["description"]
+    video_url = spot_info.get("video_url")
+    nearby_spots = spot_info.get("nearby", [])
 
-# 메인 콘텐츠 영역 (정보와 지도를 나란히 배치)
-col1, col2 = st.columns([1, 1])
+    # 메인 콘텐츠 영역: 정보, 영상, 근처 명소(왼쪽)와 지도(오른쪽)
+    col1, col2 = st.columns([1, 1])
 
-with col1:
-    st.subheader(f"✨ 여러분이 선택한 곳은 바로... **{selected_spot}** 입니다!")
-    st.markdown(description)
-    st.markdown(f"**😊 {selected_spot}에서 멋진 시간을 보내세요!**")
+    with col1:
+        st.subheader(f"✨ 여러분이 선택한 곳은 바로... **{selected_spot}** 입니다!")
+        st.markdown(description)
 
-with col2:
-    st.subheader(f"📍 {selected_spot}의 위치를 지도에서 확인해 보세요!")
-    # Folium 지도 생성
-    # 중심을 선택된 관광지로 설정하고, 초기 줌 레벨을 조정했습니다.
-    m = folium.Map(location=[lat, lon], zoom_start=12)
+        # 관련 영상 표시
+        if video_url:
+            st.subheader("🎬 관련 영상")
+            st.video(video_url)
 
-    # 마커 추가 (tooltip과 popup에 관광지 이름 표시)
-    folium.Marker(
-        [lat, lon],
-        tooltip=f"**{selected_spot}**",
-        popup=f"**{selected_spot}**",
-        icon=folium.Icon(color='red', icon='info-sign') # 마커 아이콘 색상 변경
-    ).add_to(m)
+        # 근처 명소 추천
+        if nearby_spots:
+            st.subheader("📍 놓치면 아쉬운 근처 명소")
+            for spot in nearby_spots:
+                st.markdown(f"- {spot}")
 
-    # 선택된 도시의 다른 관광지들도 지도에 표시 (선택사항)
-    # for spot_name, data in cities[selected_city].items():
-    #     if spot_name != selected_spot:
-    #         folium.Marker(
-    #             data["location"],
-    #             tooltip=spot_name,
-    #             popup=spot_name,
-    #             icon=folium.Icon(color='blue')
-    #         ).add_to(m)
+        st.markdown(f"**😊 {selected_spot}와 주변 명소에서 즐거운 시간을 보내세요!**")
 
-    # Streamlit에 Folium 지도 렌더링
-    st_folium(m, width=700, height=500)
+    with col2:
+        st.subheader(f"🗺️ **{selected_spot}** 와 근처 명소 위치 (참고)")
+        # Folium 지도 생성
+        m = folium.Map(location=[lat, lon], zoom_start=12)
+
+        # 메인 관광지 마커 추가 (빨간색)
+        folium.Marker(
+            location=[lat, lon],
+            tooltip=f"**{selected_spot}**",
+            popup=f"**{selected_spot}**",
+            icon=folium.Icon(color='red', icon='info-sign')
+        ).add_to(m)
+
+        # 근처 명소 마커 추가 (파란색, 대략적인 위치)
+        # 실제 근처 명소의 정확한 위치 정보를 데이터에 추가하면 더욱 정확한 지도 표시가 가능합니다.
+        for i, spot in enumerate(nearby_spots):
+            # 메인 관광지 근처에 마커를 임의로 배치하여 시각적으로 구분
+            nearby_lat = lat + (i + 1) * 0.005 * (1 if i % 2 == 0 else -1) # 위도 살짝 조절
+            nearby_lon = lon + (i + 1) * 0.005 * (1 if i % 3 == 0 else -1) # 경도 살짝 조절
+            folium.Marker(
+                location=[nearby_lat, nearby_lon],
+                tooltip=spot,
+                popup=spot,
+                icon=folium.Icon(color='blue', icon='map-pin')
+            ).add_to(m)
+
+        # Streamlit에 Folium 지도 렌더링
+        st_folium(m, width=700, height=600)
+
+else:
+    st.warning("선택한 도시 또는 관광지 정보가 없습니다. 도시와 관광지를 선택해주세요.")
 
 st.sidebar.markdown("---")
 st.sidebar.info("이 가이드는 여러분의 즐거운 프랑스 여행을 돕기 위해 만들어졌습니다. 궁금한 점이 있다면 언제든지 문의해주세요!")
