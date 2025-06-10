@@ -17,8 +17,8 @@ cities = {
 * **잔디밭 피크닉:** 에펠탑 아래 샹 드 마르스 공원에서 여유롭게 피크닉을 즐기며 에펠탑의 웅장함을 감상해보세요.
 * **팁:** 미리 온라인으로 티켓을 예매하면 긴 줄을 피할 수 있어요!
 """,
-            "video_url": "https://www.youtube.com/watch?v=sI9pQxM-10Q", # 실제 에펠탑 관련 유튜브 영상
-            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Tour_Eiffel_Wikimedia_Commons_%281%29.jpg/1200px-Tour_Eiffel_Wikimedia_Commons_%281%29.jpg", # 에펠탑 이미지 URL
+            "video_url": "https://www.youtube.com/watch?v=R_A90hQ-VjA",  # 에펠탑 관련 유튜브 영상
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/85/Tour_Eiffel_de_nuit.jpg",  # 에펠탑 이미지
             "nearby": ["샹 드 마르스 공원", "사이요 궁", "트로카데로 광장"]
         },
         "루브르 박물관": {
@@ -35,8 +35,8 @@ cities = {
 
 **팁:** 박물관이 워낙 넓으니, 미리 보고 싶은 작품을 정해 동선을 짜는 것이 좋아요!
 """,
-            "video_url": "https://www.youtube.com/watch?v=Xh0YjGqH6mY", # 실제 루브르 박물관 관련 유튜브 영상
-            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/The_Louvre_Museum_in_Paris.jpg/1200px-The_Louvre_Museum_in_Paris.jpg", # 루브르 박물관 이미지 URL
+            "video_url": "https://www.youtube.com/watch?v=wX-y0i30s44",  # 루브르 박물관 관련 유튜브 영상
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/The_Louvre_Museum_in_Paris.jpg/1200px-The_Louvre_Museum_in_Paris.jpg",  # 루브르 박물관 이미지
             "nearby": ["튈르리 정원", "오르세 미술관", "팔레 루아얄"]
         },
         "베르사유 궁전": {
@@ -51,8 +51,8 @@ cities = {
 * **정원 (Jardins de Versailles):** 섬세하게 가꿔진 넓은 정원을 산책하거나, 보트를 타는 등 다양한 방법으로 즐길 수 있습니다. 분수쇼도 놓치지 마세요!
 * **트리아농 궁전 (Grand Trianon & Petit Trianon):** 마리 앙투아네트가 즐겨 찾던 작은 궁전들도 방문해보세요.
 """,
-            "video_url": "https://www.youtube.com/watch?v=VzW5aD8G72A", # 실제 베르사유 궁전 관련 유튜브 영상
-            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Versailles_Chateau.jpg/1200px-Versailles_Chateau.jpg", # 베르사유 궁전 이미지 URL
+            "video_url": "https://www.youtube.com/watch?v=XzS2b46039U",  # 베르사유 궁전 관련 유튜브 영상
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Versailles_Chateau.jpg/1200px-Versailles_Chateau.jpg",  # 베르사유 궁전 이미지
             "nearby": ["트리아농 궁전", "마리 앙투아네트의 영지", "베르사유 정원 오랑주리"]
         }
     },
@@ -69,8 +69,8 @@ cities = {
 * **밀물과 썰물:** 방문 시기에 따라 몽생미셸이 섬이 되거나 육지와 연결되는 모습을 볼 수 있습니다. 썰물 때는 갯벌을 걷는 체험도 가능해요!
 * **야경:** 밤이 되면 조명이 켜져 더욱 신비롭고 아름다운 모습을 감상할 수 있습니다.
 """,
-            "video_url": "https://www.youtube.com/watch?v=F_fD8T3tX6c", # 실제 몽생미셸 관련 유튜브 영상
-            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Mont_St_Michel_3.jpg/1200px-Mont_St_Michel_3.jpg", # 몽생미셸 이미지 URL
+            "video_url": "https://www.youtube.com/watch?v=F0_kP-mY4Jc",  # 몽생미셸 관련 유튜브 영상
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Mont_St_Michel_3.jpg/1200px-Mont_St_Michel_3.jpg",  # 몽생미셸 이미지
             "nearby": ["몽생미셸 만", "아브랑슈", "캉칼"]
         }
     },
@@ -87,8 +87,8 @@ cities = {
 * **구시가지 (Vieux Nice):** 좁은 골목길을 따라 아기자기한 상점과 레스토랑, 카페들이 즐비합니다. 신선한 해산물 요리도 꼭 맛보세요!
 * **마세나 광장 (Place Masséna):** 니스의 중심 광장으로, 독특한 조형물과 아름다운 건축물들이 어우러져 있습니다.
 """,
-            "video_url": "https://www.youtube.com/watch?v=q6d_P-T_k6s", # 실제 니스 관련 유튜브 영상
-            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Nice_France_Promenade_des_Anglais.jpg/1200px-Nice_France_Promenade_des_Anglais.jpg", # 니스 이미지 URL
+            "video_url": "https://www.youtube.com/watch?v=LpU0pQW7d0I",  # 니스 관련 유튜브 영상
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Nice_France_Promenade_des_Anglais.jpg/1200px-Nice_France_Promenade_des_Anglais.jpg",  # 니스 이미지
             "nearby": ["빌 프랑슈 쉬르 메르", "에즈 빌리지", "마티스 미술관"]
         },
         "칸": {
@@ -103,8 +103,8 @@ cities = {
 * **크루아제트 거리 (La Croisette):** 고급 부티크와 호텔들이 늘어선 해변 산책로입니다. 지중해의 풍경을 감상하며 여유로운 시간을 보내보세요.
 * **레렝 군도 (Îles de Lérins):** 페리를 타고 가까운 레렝 군도로 가서 자연 속에서 평화로운 시간을 보내거나, '철가면'의 전설이 깃든 생트 마르그리트 섬을 방문해보세요.
 """,
-            "video_url": "https://www.youtube.com/watch?v=aGZq22w0qFk", # 실제 칸 관련 유튜브 영상
-            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Cannes_Film_Festival_2010.jpg/1200px-Cannes_Film_Festival_2010.jpg", # 칸 이미지 URL
+            "video_url": "https://www.youtube.com/watch?v=Zf_xQ7iZ9j8",  # 칸 관련 유튜브 영상
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Cannes_Film_Festival_2010.jpg/1200px-Cannes_Film_Festival_2010.jpg",  # 칸 이미지
             "nearby": ["레렝 군도", "그라스", "앙티브"]
         }
     }
@@ -155,7 +155,7 @@ if selected_spot and selected_city in cities and selected_spot in cities.get(sel
 
         # 관련 이미지 표시
         if image_url:
-            st.image(image_url, caption=selected_spot, use_container_width=True) # use_container_width로 수정
+            st.image(image_url, caption=selected_spot, use_container_width=True)
 
         # 관련 영상 표시
         if video_url:
@@ -176,7 +176,6 @@ if selected_spot and selected_city in cities and selected_spot in cities.get(sel
         ).add_to(m)
 
         # 근처 명소 마커 추가 (파란색, 대략적인 위치)
-        # 실제 근처 명소의 정확한 위치 정보를 데이터에 추가하면 더욱 정확한 지도 표시가 가능합니다.
         for i, spot in enumerate(nearby_spots):
             # 메인 관광지 근처에 마커를 임의로 배치하여 시각적으로 구분
             nearby_lat = lat + (i + 1) * 0.005 * (1 if i % 2 == 0 else -1)  # 위도 살짝 조절
