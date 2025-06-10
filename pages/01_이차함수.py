@@ -34,35 +34,24 @@ def get_sign(value):
     else:
         return "0"
 
-def generate_new_question():
-    """새로운 퀴즈 문제를 생성하고 세션 상태에 저장합니다."""
+def initialize_quiz_session():
+    """퀴즈 세션을 처음으로 초기화하거나 재설정합니다."""
     a, b, c = generate_random_coefficients()
 
-    # 정답 부호 추출
-    correct_a_sign = get_sign(a)
-    correct_b_sign = get_sign(b)
-    correct_c_sign = get_sign(c)
-
-    # 세션 상태에 현재 퀴즈 데이터 저장
-    st.session_state.quiz_data['a'] = a
-    st.session_state.quiz_data['b'] = b
-    st.session_state.quiz_data['c'] = c
-    st.session_state.quiz_data['correct_a_sign'] = correct_a_sign
-    st.session_state.quiz_data['correct_b_sign'] = correct_b_sign
-    st.session_state.quiz_data['correct_c_sign'] = correct_c_sign
-    st.session_state.quiz_data['show_answer'] = False # 정답 숨기기
-    st.session_state.quiz_data['question_number'] += 1 # 문제 번호 증가
-
-# 세션 상태 'quiz_data' 초기화. 앱이 처음 로드될 때만 실행됩니다.
-if 'quiz_data' not in st.session_state:
     st.session_state.quiz_data = {
-        'a': 0, 'b': 0, 'c': 0, # 현재 문제의 계수
-        'correct_a_sign': '', 'correct_b_sign': '', 'correct_c_sign': '', # 정답 부호
-        'question_number': 0, # 총 문제 수
+        'a': a, 'b': b, 'c': c, # 현재 문제의 계수
+        'correct_a_sign': get_sign(a),
+        'correct_b_sign': get_sign(b),
+        'correct_c_sign': get_sign(c),
+        'question_number': 1, # 첫 문제이므로 1로 시작
         'correct_count': 0,   # 맞춘 문제 수
         'show_answer': False  # 정답 표시 여부
     }
-    generate_new_question() # 첫 문제 생성
+
+# 세션 상태 'quiz_data' 초기화. 앱이 처음 로드될 때만 실행됩니다.
+# 'quiz_data' 키가 세션 상태에 없으면, 퀴즈 세션을 초기화합니다.
+if 'quiz_data' not in st.session_state:
+    initialize_quiz_session()
 
 # --- 그래프 그리기 함수 ---
 def plot_quadratic_function(a, b, c):
@@ -161,7 +150,16 @@ if submit_button:
 
 elif new_question_button:
     # 새로운 문제 생성 후 앱 다시 실행 (UI 업데이트)
-    generate_new_question()
+    # 현재 문제 번호 증가시키고, 새로운 계수와 정답 부호를 설정합니다.
+    st.session_state.quiz_data['question_number'] += 1 # 문제 번호 증가
+    a, b, c = generate_random_coefficients() # 새로운 계수 생성
+    st.session_state.quiz_data['a'] = a
+    st.session_state.quiz_data['b'] = b
+    st.session_state.quiz_data['c'] = c
+    st.session_state.quiz_data['correct_a_sign'] = get_sign(a)
+    st.session_state.quiz_data['correct_b_sign'] = get_sign(b)
+    st.session_state.quiz_data['correct_c_sign'] = get_sign(c)
+    st.session_state.quiz_data['show_answer'] = False # 정답 숨기기
     st.rerun() # 앱의 전체 스크립트를 다시 실행하여 변경 사항을 즉시 반영
 
 # --- 퀴즈 진행 상황 대시보드 (사이드바) ---
