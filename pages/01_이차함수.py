@@ -34,24 +34,50 @@ def get_sign(value):
     else:
         return "0"
 
-def initialize_quiz_session():
-    """퀴즈 세션을 처음으로 초기화하거나 재설정합니다."""
+def setup_new_question_data():
+    """새로운 문제에 대한 데이터를 생성하여 세션 상태에 저장하고, 문제 번호를 증가시킵니다."""
     a, b, c = generate_random_coefficients()
+    st.session_state.quiz_data['a'] = a
+    st.session_state.quiz_data['b'] = b
+    st.session_state.quiz_data['c'] = c
+    st.session_state.quiz_data['correct_a_sign'] = get_sign(a)
+    st.session_state.quiz_data['correct_b_sign'] = get_sign(b)
+    st.session_state.quiz_data['correct_c_sign'] = get_sign(c)
+    st.session_state.quiz_data['show_answer'] = False # 정답 숨기기
+    st.session_state.quiz_data['question_number'] += 1 # 문제 번호 증가
 
-    st.session_state.quiz_data = {
-        'a': a, 'b': b, 'c': c, # 현재 문제의 계수
-        'correct_a_sign': get_sign(a),
-        'correct_b_sign': get_sign(b),
-        'correct_c_sign': get_sign(c),
-        'question_number': 1, # 첫 문제이므로 1로 시작
-        'correct_count': 0,   # 맞춘 문제 수
-        'show_answer': False  # 정답 표시 여부
-    }
+# --- 세션 상태 초기화: 모든 필요한 키가 존재하는지 확인하고, 없으면 기본값 할당 ---
+# 이 블록은 앱이 실행될 때마다 검사되어, 세션 상태가 항상 올바르게 초기화되도록 보장합니다.
 
-# 세션 상태 'quiz_data' 초기화. 앱이 처음 로드될 때만 실행됩니다.
-# 'quiz_data' 키가 세션 상태에 없으면, 퀴즈 세션을 초기화합니다.
 if 'quiz_data' not in st.session_state:
-    initialize_quiz_session()
+    st.session_state.quiz_data = {}
+
+# quiz_data 내의 모든 필요한 키들을 개별적으로 확인하고 초기화합니다.
+# 이렇게 하면 특정 키가 누락되었을 때도 안전하게 기본값을 설정할 수 있습니다.
+if 'a' not in st.session_state.quiz_data:
+    st.session_state.quiz_data['a'] = 0
+if 'b' not in st.session_state.quiz_data:
+    st.session_state.quiz_data['b'] = 0
+if 'c' not in st.session_state.quiz_data:
+    st.session_state.quiz_data['c'] = 0
+if 'correct_a_sign' not in st.session_state.quiz_data:
+    st.session_state.quiz_data['correct_a_sign'] = ''
+if 'correct_b_sign' not in st.session_state.quiz_data:
+    st.session_state.quiz_data['correct_b_sign'] = ''
+if 'correct_c_sign' not in st.session_state.quiz_data:
+    st.session_state.quiz_data['correct_c_sign'] = ''
+if 'question_number' not in st.session_state.quiz_data:
+    st.session_state.quiz_data['question_number'] = 0 # 초기값 0
+if 'correct_count' not in st.session_state.quiz_data:
+    st.session_state.quiz_data['correct_count'] = 0
+if 'show_answer' not in st.session_state.quiz_data:
+    st.session_state.quiz_data['show_answer'] = False
+
+# 앱이 처음 시작될 때만 첫 문제를 설정합니다.
+# question_number가 0인 상태는 앱이 처음 로드되었을 때만 해당합니다.
+if st.session_state.quiz_data['question_number'] == 0:
+    setup_new_question_data()
+
 
 # --- 그래프 그리기 함수 ---
 def plot_quadratic_function(a, b, c):
@@ -95,6 +121,7 @@ def plot_quadratic_function(a, b, c):
 
 # --- 퀴즈 UI ---
 
+# 이 부분은 'question_number'가 항상 존재한다고 가정하므로, 위에서 초기화가 중요합니다.
 st.header(f"문제 #{st.session_state.quiz_data['question_number']}")
 
 # 현재 문제의 계수로 그래프 그리기
@@ -107,7 +134,6 @@ plot_quadratic_function(
 st.subheader("각 계수의 부호는 무엇일까요?")
 
 # 사용자 입력 드롭다운 메뉴
-# Streamlit의 columns를 사용하여 깔끔하게 배치
 col_a, col_b, col_c = st.columns(3)
 with col_a:
     user_a_sign = st.selectbox("계수 a (볼록성)", ["선택", "양수", "음수"], key="a_select")
@@ -150,16 +176,7 @@ if submit_button:
 
 elif new_question_button:
     # 새로운 문제 생성 후 앱 다시 실행 (UI 업데이트)
-    # 현재 문제 번호 증가시키고, 새로운 계수와 정답 부호를 설정합니다.
-    st.session_state.quiz_data['question_number'] += 1 # 문제 번호 증가
-    a, b, c = generate_random_coefficients() # 새로운 계수 생성
-    st.session_state.quiz_data['a'] = a
-    st.session_state.quiz_data['b'] = b
-    st.session_state.quiz_data['c'] = c
-    st.session_state.quiz_data['correct_a_sign'] = get_sign(a)
-    st.session_state.quiz_data['correct_b_sign'] = get_sign(b)
-    st.session_state.quiz_data['correct_c_sign'] = get_sign(c)
-    st.session_state.quiz_data['show_answer'] = False # 정답 숨기기
+    setup_new_question_data() # 새로운 문제 데이터 설정
     st.rerun() # 앱의 전체 스크립트를 다시 실행하여 변경 사항을 즉시 반영
 
 # --- 퀴즈 진행 상황 대시보드 (사이드바) ---
