@@ -3,7 +3,7 @@ import folium
 from streamlit_folium import st_folium
 
 # 도시별 관광지 데이터 (이미지, 근처 명소 정보 포함)
-# 웹 이미지 링크를 다시 적용했습니다. 링크가 깨질 수 있음을 주의해주세요!
+# 에펠탑 이미지 링크를 요청하신 링크로 수정했습니다.
 cities = {
     "파리": {
         "에펠탑": {
@@ -18,7 +18,7 @@ cities = {
 * **잔디밭 피크닉:** 에펠탑 아래 샹 드 마르스 공원에서 여유롭게 피크닉을 즐기며 에펠탑의 웅장함을 감상해보세요.
 * **팁:** 미리 온라인으로 티켓을 예매하면 긴 줄을 피할 수 있어요!
 """,
-            "image_url": "http://googleusercontent.com/image_collection/image_retrieval/16518299210364847778",  # 에펠탑 이미지
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg/250px-Tour_Eiffel_Wikimedia_Commons_%28cropped%29.jpg",  # 요청하신 에펠탑 위키미디어 이미지
             "nearby": [
                 {"name": "샹 드 마르스 공원", "distance": "도보 5분"},
                 {"name": "사이요 궁", "distance": "도보 10분"},
@@ -39,7 +39,7 @@ cities = {
 
 **팁:** 박물관이 워낙 넓으니, 미리 보고 싶은 작품을 정해 동선을 짜는 것이 좋아요!
 """,
-            "image_url": "http://googleusercontent.com/image_collection/image_retrieval/8664260191724047581",  # 루브르 박물관 이미지
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/The_Louvre_Museum_in_Paris.jpg/1200px-The_Louvre_Museum_in_Paris.jpg",  # 루브르 박물관 이미지 (Wikimedia Commons)
             "nearby": [
                 {"name": "튈르리 정원", "distance": "도보 2분"},
                 {"name": "오르세 미술관", "distance": "도보 15분"},
@@ -58,7 +58,7 @@ cities = {
 * **정원 (Jardins de Versailles):** 섬세하게 가꿔진 넓은 정원을 산책하거나, 보트를 타는 등 다양한 방법으로 즐길 수 있습니다. 분수쇼도 놓치지 마세요!
 * **트리아농 궁전 (Grand Trianon & Petit Trianon):** 마리 앙투아네트가 즐겨 찾던 작은 궁전들도 방문해보세요.
 """,
-            "image_url": "http://googleusercontent.com/image_collection/image_retrieval/3468562127449866834",  # 베르사유 궁전 이미지
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Versailles_Chateau.jpg/1200px-Versailles_Chateau.jpg",  # 베르사유 궁전 이미지 (Wikimedia Commons)
             "nearby": [
                 {"name": "트리아농 궁전", "distance": "도보 15분"},
                 {"name": "마리 앙투아네트의 영지", "distance": "도보 20분"},
@@ -79,7 +79,7 @@ cities = {
 * **밀물과 썰물:** 방문 시기에 따라 몽생미셸이 섬이 되거나 육지와 연결되는 모습을 볼 수 있습니다. 썰물 때는 갯벌을 걷는 체험도 가능해요!
 * **야경:** 밤이 되면 조명이 켜져 더욱 신비롭고 아름다운 모습을 감상할 수 있습니다.
 """,
-            "image_url": "http://googleusercontent.com/image_collection/image_retrieval/1551120537943251675",  # 몽생미셸 이미지
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Mont_St_Michel_3.jpg/1200px-Mont_St_Michel_3.jpg",  # 몽생미셸 이미지 (Wikimedia Commons)
             "nearby": [
                 {"name": "몽생미셸 만", "distance": "인근"},
                 {"name": "아브랑슈", "distance": "차량 20분"},
@@ -100,7 +100,7 @@ cities = {
 * **구시가지 (Vieux Nice):** 좁은 골목길을 따라 아기자기한 상점과 레스토랑, 카페들이 즐비합니다. 신선한 해산물 요리도 꼭 맛보세요!
 * **마세나 광장 (Place Masséna):** 니스의 중심 광장으로, 독특한 조형물과 아름다운 건축물들이 어우러져 있습니다.
 """,
-            "image_url": "http://googleusercontent.com/image_collection/image_retrieval/11382160548440524926",  # 니스 이미지
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Nice_France_Promenade_des_Anglais.jpg/1200px-Nice_France_Promenade_des_Anglais.jpg",  # 니스 이미지 (Wikimedia Commons)
             "nearby": [
                 {"name": "빌 프랑슈 쉬르 메르", "distance": "차량 15분"},
                 {"name": "에즈 빌리지", "distance": "차량 20분"},
@@ -119,7 +119,7 @@ cities = {
 * **크루아제트 거리 (La Croisette):** 고급 부티크와 호텔들이 늘어선 해변 산책로입니다. 지중해의 풍경을 감상하며 여유로운 시간을 보내보세요.
 * **레렝 군도 (Îles de Lérins):** 페리를 타고 가까운 레렝 군도로 가서 자연 속에서 평화로운 시간을 보내거나, '철가면'의 전설이 깃든 생트 마르그리트 섬을 방문해보세요.
 """,
-            "image_url": "http://googleusercontent.com/image_collection/image_retrieval/13762914672355906778",  # 칸 이미지
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Cannes_Film_Festival_2010.jpg/1200px-Cannes_Film_Festival_2010.jpg",  # 칸 이미지 (Wikimedia Commons)
             "nearby": [
                 {"name": "레렝 군도", "distance": "페리 20분"},
                 {"name": "그라스 (향수의 도시)", "distance": "차량 30분"},
