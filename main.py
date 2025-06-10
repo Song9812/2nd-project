@@ -1,197 +1,227 @@
 import streamlit as st
-import yfinance as yf
-import pandas as pd
-import plotly.graph_objects as go
-from datetime import datetime, timedelta
+import folium
+from streamlit_folium import st_folium
 
-st.set_page_config(layout="wide")
+# 도시별 관광지 데이터 (이미지, 근처 명소 정보 포함)
+# 이번에는 더 안정적인 것으로 보이는 이미지 링크로 교체했습니다.
+cities = {
+    "파리": {
+        "에펠탑": {
+            "location": [48.8584, 2.2945],
+            "description": """
+**✨ 파리의 상징, 에펠탑 (Tour Eiffel)**
 
-st.title("글로벌 시총 Top 10 기업 주가 변화")
+환영합니다! 프랑스 파리 하면 가장 먼저 떠오르는, 빛나는 철골 구조물, 바로 에펠탑입니다. 밤이 되면 반짝이는 조명은 파리의 밤하늘을 더욱 로맨틱하게 만들어준답니다.
 
-TOP_10_COMPANIES = {
-    "AAPL": "Apple",
-    "MSFT": "Microsoft",
-    "GOOGL": "Alphabet (Google) A",
-    "AMZN": "Amazon",
-    "NVDA": "NVIDIA",
-    "META": "Meta Platforms",
-    "TSLA": "Tesla",
-    "BRK-A": "Berkshire Hathaway A",
-    "JPM": "JPMorgan Chase",
-    "LLY": "Eli Lilly and Company",
+**놓치지 마세요!**
+* **전망대:** 에펠탑에 올라 파리 시내를 한눈에 담아보세요. 특히 해 질 녘 노을과 야경은 정말 감동적이에요!
+* **잔디밭 피크닉:** 에펠탑 아래 샹 드 마르스 공원에서 여유롭게 피크닉을 즐기며 에펠탑의 웅장함을 감상해보세요.
+* **팁:** 미리 온라인으로 티켓을 예매하면 긴 줄을 피할 수 있어요!
+""",
+            "image_url": "https://img.travel.rakuten.co.jp/share/image/international/FRANCE/PARIS/eiffel_tower_1.jpg",  # 에펠탑 이미지 (라쿠텐 트래블)
+            "nearby": [
+                {"name": "샹 드 마르스 공원", "distance": "도보 5분"},
+                {"name": "사이요 궁", "distance": "도보 10분"},
+                {"name": "개선문", "distance": "차량 10분"}
+            ]
+        },
+        "루브르 박물관": {
+            "location": [48.8606, 2.3376],
+            "description": """
+**🎨 세계 최대의 예술의 보고, 루브르 박물관 (Musée du Louvre)**
+
+예술을 사랑하는 분이라면 절대 놓칠 수 없는 곳, 루브르 박물관입니다. 유리 피라미드를 통해 입장하면, 고대 문명부터 근세까지 수많은 걸작들이 여러분을 기다리고 있어요.
+
+**꼭 봐야 할 작품!**
+* **모나리자 (Mona Lisa):** 레오나르도 다빈치의 신비로운 미소를 직접 만나보세요.
+* **밀로의 비너스 (Venus de Milo):** 완벽한 비율을 자랑하는 고대 그리스 조각상입니다.
+* **사모트라케의 니케 (Winged Victory of Samothrace):** 박물관 중앙 계단에 우뚝 솟아 있는 승리의 여신상입니다.
+
+**팁:** 박물관이 워낙 넓으니, 미리 보고 싶은 작품을 정해 동선을 짜는 것이 좋아요!
+""",
+            "image_url": "https://a.travel-assets.com/findhotels/assets/default_images/3000000000000.jpg",  # 루브르 박물관 이미지 (익스피디아)
+            "nearby": [
+                {"name": "튈르리 정원", "distance": "도보 2분"},
+                {"name": "오르세 미술관", "distance": "도보 15분"},
+                {"name": "팔레 루아얄", "distance": "도보 5분"}
+            ]
+        },
+        "베르사유 궁전": {
+            "location": [48.8049, 2.1204],
+            "description": """
+**👑 프랑스 왕실의 화려함, 베르사유 궁전 (Château de Versailles)**
+
+파리 근교에 위치한 베르사유 궁전은 프랑스 절대 왕정의 상징이자, 화려함의 극치를 보여주는 곳입니다. 궁전 내부는 물론, 광대한 정원도 압도적인 아름다움을 자랑합니다.
+
+**하이라이트!**
+* **거울의 방 (Galerie des Glaces):** 화려한 샹들리에와 거울로 장식된 이 방은 눈부신 아름다움에 감탄을 자아내게 할 거예요.
+* **정원 (Jardins de Versailles):** 섬세하게 가꿔진 넓은 정원을 산책하거나, 보트를 타는 등 다양한 방법으로 즐길 수 있습니다. 분수쇼도 놓치지 마세요!
+* **트리아농 궁전 (Grand Trianon & Petit Trianon):** 마리 앙투아네트가 즐겨 찾던 작은 궁전들도 방문해보세요.
+""",
+            "image_url": "https://img.travel.rakuten.co.jp/share/image/international/FRANCE/PARIS/versailles_1.jpg",  # 베르사유 궁전 이미지 (라쿠텐 트래블)
+            "nearby": [
+                {"name": "트리아농 궁전", "distance": "도보 15분"},
+                {"name": "마리 앙투아네트의 영지", "distance": "도보 20분"},
+                {"name": "베르사유 정원 오랑주리", "distance": "도보 10분"}
+            ]
+        }
+    },
+    "노르망디": {
+        "몽생미셸": {
+            "location": [48.6361, -1.5115],
+            "description": """
+**🏰 신비로운 수도원 섬, 몽생미셸 (Mont-Saint-Michel)**
+
+마치 동화 속에 들어온 듯한 착각을 불러일으키는 몽생미셸은 노르망디 해안에 위치한 수도원 섬입니다. 유네스코 세계유산으로 지정된 이곳은 밀물과 썰물의 차이가 만들어내는 장관으로 유명해요.
+
+**특별한 경험!**
+* **수도원 탐방:** 바다 위에 홀로 솟아 있는 수도원 내부를 탐방하며 중세 건축의 아름다움을 느껴보세요.
+* **밀물과 썰물:** 방문 시기에 따라 몽생미셸이 섬이 되거나 육지와 연결되는 모습을 볼 수 있습니다. 썰물 때는 갯벌을 걷는 체험도 가능해요!
+* **야경:** 밤이 되면 조명이 켜져 더욱 신비롭고 아름다운 모습을 감상할 수 있습니다.
+""",
+            "image_url": "https://img.travel.rakuten.co.jp/share/image/international/FRANCE/MONT_ST_MICHEL/mont_st_michel_1.jpg",  # 몽생미셸 이미지 (라쿠텐 트래블)
+            "nearby": [
+                {"name": "몽생미셸 만", "distance": "인근"},
+                {"name": "아브랑슈", "distance": "차량 20분"},
+                {"name": "캉칼 (굴 생산지)", "distance": "차량 40분"}
+            ]
+        }
+    },
+    "남프랑스 (코트다쥐르)": {
+        "니스": {
+            "location": [43.7000, 7.2661],
+            "description": """
+**☀️ 햇살 가득한 해변 도시, 니스 (Nice)**
+
+지중해의 푸른 바다와 따뜻한 햇살이 반기는 니스에 오신 것을 환영합니다! '천사의 만'이라 불리는 아름다운 해변과 활기찬 구시가지가 매력적인 도시입니다.
+
+**니스에서 즐길 거리!**
+* **프롬나드 데 장글레 (Promenade des Anglais):** 니스의 상징인 해변 산책로를 따라 걸으며 지중해의 아름다움을 만끽해보세요. 자전거를 타거나 조깅을 하기에도 좋습니다.
+* **구시가지 (Vieux Nice):** 좁은 골목길을 따라 아기자기한 상점과 레스토랑, 카페들이 즐비합니다. 신선한 해산물 요리도 꼭 맛보세요!
+* **마세나 광장 (Place Masséna):** 니스의 중심 광장으로, 독특한 조형물과 아름다운 건축물들이 어우러져 있습니다.
+""",
+            "image_url": "https://www.tripsavvy.com/thmb/gqS9Gg8f1N8jK-h2z0e2o1O9_0A=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-488251214-59e51c86aad52b001099684b.jpg",  # 니스 이미지 (트립사비)
+            "nearby": [
+                {"name": "빌 프랑슈 쉬르 메르", "distance": "차량 15분"},
+                {"name": "에즈 빌리지", "distance": "차량 20분"},
+                {"name": "마티스 미술관", "distance": "차량 10분"}
+            ]
+        },
+        "칸": {
+            "location": [43.5516, 7.0177],
+            "description": """
+**🎬 영화제의 도시, 칸 (Cannes)**
+
+매년 5월, 세계적인 영화배우와 감독들이 모여드는 영화제의 도시, 칸입니다. 영화제가 아니더라도 고급스러운 분위기와 아름다운 해변을 즐길 수 있는 매력적인 곳이에요.
+
+**칸에서 꼭 해봐야 할 것!**
+* **레드 카펫 밟기 (Palais des Festivals et des Congrès):** 칸 국제영화제가 열리는 영화궁 앞에서 스타들처럼 레드 카펫을 밟아보는 특별한 경험을 해보세요!
+* **크루아제트 거리 (La Croisette):** 고급 부티크와 호텔들이 늘어선 해변 산책로입니다. 지중해의 풍경을 감상하며 여유로운 시간을 보내보세요.
+* **레렝 군도 (Îles de Lérins):** 페리를 타고 가까운 레렝 군도로 가서 자연 속에서 평화로운 시간을 보내거나, '철가면'의 전설이 깃든 생트 마르그리트 섬을 방문해보세요.
+""",
+            "image_url": "https://www.traveltriangle.com/blog/wp-content/uploads/2019/02/things-to-do-in-cannes-cover.jpg",  # 칸 이미지 (트래블 트라이앵글)
+            "nearby": [
+                {"name": "레렝 군도", "distance": "페리 20분"},
+                {"name": "그라스 (향수의 도시)", "distance": "차량 30분"},
+                {"name": "앙티브", "distance": "차량 20분"}
+            ]
+        }
+    }
 }
 
-@st.cache_data
-def get_stock_data(ticker_symbol, start_date, end_date):
-    """지정된 티커의 주식 데이터를 가져옵니다."""
-    try:
-        data = yf.download(ticker_symbol, start=start_date, end=end_date, progress=False)
+# Streamlit 앱 구성
+st.set_page_config(page_title="🇫🇷 프랑스 주요 관광지 가이드", layout="wide", initial_sidebar_state="expanded")
 
-        if data.empty:
-            return None
-        
-        if 'Adj Close' in data.columns and not data['Adj Close'].empty:
-            data['Price'] = data['Adj Close']
-        elif 'Close' in data.columns and not data['Close'].empty:
-            data['Price'] = data['Close']
-        else:
-            return None
+st.title("🇫🇷 프랑스 주요 관광지, 이미지와 함께 더 자세히 알아보기!")
+st.markdown("""
+안녕하세요! 아름다운 프랑스의 주요 관광지들을 더욱 생생하게 경험할 수 있도록, 관련 이미지를 추가했어요.
+원하는 도시와 관광지를 선택하시면, 그곳의 매력적인 이미지와 함께 주변의 놓치면 아쉬운 명소들을 함께 안내해 드립니다.
+프랑스 여행 계획을 더욱 풍성하게 만들어보세요!
+""")
 
-        return data[['Open', 'High', 'Low', 'Close', 'Price']] if all(col in data.columns for col in ['Open', 'High', 'Low', 'Close']) else data[['Price']]
-        
-    except Exception as e:
-        return None
-
-# 날짜 설정
-end_date = datetime.now()
-start_date = end_date - timedelta(days=3 * 365) # 3년 전
-
-st.write(f"기간: {start_date.strftime('%Y-%m-%d')} ~ {end_date.strftime('%Y-%m-%d')}")
-
-# --- 희망 기업 선택 기능 (체크박스) 추가 ---
-st.sidebar.header("기업 선택")
-selected_companies_names = []
-for ticker, name in TOP_10_COMPANIES.items():
-    if st.sidebar.checkbox(f"{name} ({ticker})", value=True): # 기본적으로 모든 기업 체크
-        selected_companies_names.append(name)
-
-# 선택된 기업의 티커 리스트 생성
-selected_tickers = {ticker: name for ticker, name in TOP_10_COMPANIES.items() if name in selected_companies_names}
-# --- 희망 기업 선택 기능 끝 ---
-
-# 모든 기업의 데이터 가져오기
-all_stock_data_raw = {}
-all_price_data = pd.DataFrame()
-
-st.subheader("주식 데이터 가져오기 진행 중...")
-progress_bar_placeholder = st.empty()
-progress_bar = progress_bar_placeholder.progress(0)
-message_placeholder = st.empty()
-
-if selected_tickers: # 선택된 기업이 있을 때만 데이터 로드 시도
-    for i, (ticker, name) in enumerate(selected_tickers.items()):
-        message_placeholder.text(f"데이터 가져오는 중: {name} ({ticker})...")
-        
-        data_df = get_stock_data(ticker, start_date, end_date)
-        
-        if data_df is not None and not data_df.empty:
-            all_stock_data_raw[name] = data_df
-            if 'Price' in data_df.columns:
-                all_price_data[name] = data_df['Price']
-        progress_bar.progress((i + 1) / len(selected_tickers))
-
-    message_placeholder.empty()
-    progress_bar_placeholder.empty()
-
-    if not all_price_data.empty:
-        normalized_data = all_price_data.dropna(axis=1, how='all')
-        if not normalized_data.empty:
-            normalized_data = normalized_data / normalized_data.iloc[0] * 100
-
-            st.subheader("기간별 주가 변화 (초기 가격 100으로 정규화)")
-
-            fig = go.Figure()
-            for col in normalized_data.columns:
-                fig.add_trace(go.Scatter(x=normalized_data.index, y=normalized_data[col], mode='lines', name=col))
-
-            fig.update_layout(
-                title="선택된 글로벌 시총 Top 기업 주가 변화",
-                xaxis_title="날짜",
-                yaxis_title="정규화된 주가 (시작점 100)",
-                hovermode="x unified",
-                legend_title="기업",
-                height=600
-            )
-            st.plotly_chart(fig, use_container_width=True)
-        else:
-            st.warning("정규화할 유효한 주식 데이터가 없습니다. 선택된 기업의 데이터를 확인해주세요.")
-
-    else:
-        st.warning("데이터를 가져오는 데 실패했거나, 선택된 기업의 데이터가 없습니다. 티커 목록을 확인하거나 잠시 후 다시 시도해 주세요.")
-
-else:
-    message_placeholder.empty()
-    progress_bar_placeholder.empty()
-    st.info("표시할 기업을 선택해주세요.")
-
----
-
-## 개별 기업 주가 상세 보기
-
-chart_type = st.radio(
-    "어떤 형식으로 주가를 보시겠습니까?",
-    ('종가 라인 차트', '종가 영역 차트', '캔들스틱 차트 (OHLC 데이터 필요)')
+# 사이드바에서 도시 선택
+st.sidebar.header("🗺️ 여행지를 선택하세요!")
+city_names = list(cities.keys())
+selected_city = st.sidebar.selectbox(
+    "어떤 도시로 떠나고 싶으신가요?",
+    city_names,
+    index=0  # 기본값으로 첫 번째 도시 선택
 )
 
-available_for_details = list(all_stock_data_raw.keys())
-    
-if available_for_details:
-    selected_company_for_details = st.selectbox(
-        "상세 차트를 보고 싶은 기업을 선택하세요:",
-        options=available_for_details
-    )
+# 선택한 도시의 관광지 목록
+spots_in_city = list(cities.get(selected_city, {}).keys())
+selected_spot = st.sidebar.selectbox(
+    f"{selected_city}의 어떤 관광지를 보고 싶으신가요?",
+    spots_in_city,
+    index=0  # 기본값으로 첫 번째 관광지 선택
+)
 
-    if selected_company_for_details:
-        ticker_symbol_for_details = [k for k, v in TOP_10_COMPANIES.items() if v == selected_company_for_details][0]
-        
-        st.write(f"**{selected_company_for_details} ({ticker_symbol_for_details})**")
-        
-        detail_data = all_stock_data_raw.get(selected_company_for_details)
+# 선택된 관광지가 있는지 확인하고 정보 표시
+if selected_spot and selected_city in cities and selected_spot in cities.get(selected_city, {}):
+    spot_info = cities.get(selected_city, {}).get(selected_spot)
+    lat, lon = spot_info["location"]
+    description = spot_info["description"]
+    image_url = spot_info.get("image_url")
+    nearby_spots = spot_info.get("nearby", [])
 
-        if detail_data is not None and not detail_data.empty:
-            if chart_type == '종가 라인 차트':
-                if 'Price' in detail_data.columns:
-                    fig_line = go.Figure(data=[go.Scatter(x=detail_data.index, y=detail_data['Price'], mode='lines', name='종가')])
-                    fig_line.update_layout(
-                        title=f"{selected_company_for_details} 종가 라인 차트",
-                        xaxis_title="날짜",
-                        yaxis_title="주가",
-                        height=500
-                    )
-                    st.plotly_chart(fig_line, use_container_width=True)
-                else:
-                    st.warning(f"{selected_company_for_details} 의 종가(Price) 데이터를 찾을 수 없어 라인 차트를 그릴 수 없습니다.")
+    # 메인 콘텐츠 영역: 정보 (왼쪽) / 지도, 근처 명소 목록 (오른쪽)
+    col1, col2 = st.columns([1, 1])
 
-            elif chart_type == '종가 영역 차트':
-                if 'Price' in detail_data.columns:
-                    fig_area = go.Figure(data=[go.Scatter(x=detail_data.index, y=detail_data['Price'], mode='lines', fill='tozeroy', name='종가')])
-                    fig_area.update_layout(
-                        title=f"{selected_company_for_details} 종가 영역 차트",
-                        xaxis_title="날짜",
-                        yaxis_title="주가",
-                        height=500
-                    )
-                    st.plotly_chart(fig_area, use_container_width=True)
-                else:
-                    st.warning(f"{selected_company_for_details} 의 종가(Price) 데이터를 찾을 수 없어 영역 차트를 그릴 수 없습니다.")
+    with col1:
+        st.subheader(f"✨ 여러분이 선택한 곳은 바로... **{selected_spot}** 입니다!")
+        st.markdown(description)
 
-            elif chart_type == '캔들스틱 차트 (OHLC 데이터 필요)':
-                required_ohlc_cols = ['Open', 'High', 'Low', 'Close']
-                if all(col in detail_data.columns and not detail_data[col].empty for col in required_ohlc_cols):
-                    fig_candlestick = go.Figure(data=[go.Candlestick(
-                        x=detail_data.index,
-                        open=detail_data['Open'],
-                        high=detail_data['High'],
-                        low=detail_data['Low'],
-                        close=detail_data['Close']
-                    )])
+        # 관련 이미지 표시
+        if image_url:
+            st.image(image_url, caption=selected_spot, use_container_width=True)
 
-                    fig_candlestick.update_layout(
-                        title=f"{selected_company_for_details} 캔들스틱 차트",
-                        xaxis_title="날짜",
-                        yaxis_title="주가",
-                        xaxis_rangeslider_visible=False,
-                        height=500
-                    )
-                    st.plotly_chart(fig_candlestick, use_container_width=True)
-                else:
-                    st.warning(f"{selected_company_for_details} 의 캔들스틱 차트를 그리는 데 필요한 데이터(Open, High, Low, Close)가 불완전합니다. 다른 차트 형식을 선택하세요.")
+    with col2:
+        st.subheader(f"🗺️ **{selected_spot}** 와 근처 명소")
+        # Folium 지도 생성
+        m = folium.Map(location=[lat, lon], zoom_start=12)
 
-        else:
-            st.warning(f"{selected_company_for_details} 의 상세 차트 데이터를 가져올 수 없습니다. 다시 시도하거나 다른 기업을 선택하세요.")
+        # 메인 관광지 마커 추가 (빨간색)
+        folium.Marker(
+            location=[lat, lon],
+            tooltip=f"**{selected_spot}**",
+            popup=f"**{selected_spot}**",
+            icon=folium.Icon(color='red', icon='info-sign')
+        ).add_to(m)
+
+        # 근처 명소 마커 추가 (파란색, 번호 아이콘)
+        for i, spot_data in enumerate(nearby_spots):
+            # 대략적인 위치 조정을 통해 마커가 겹치지 않도록 함
+            nearby_lat = lat + (i + 1) * 0.005 * (1 if i % 2 == 0 else -1)
+            nearby_lon = lon + (i + 1) * 0.005 * (1 if (i // 2) % 2 == 0 else -1)
+
+            folium.Marker(
+                location=[nearby_lat, nearby_lon],
+                tooltip=f"{i+1}. {spot_data['name']}",
+                popup=f"**{i+1}. {spot_data['name']}** (거리: {spot_data['distance']})",
+                icon=folium.DivIcon(
+                    html=f"""
+                    <div style="font-size: 12px; color: blue; background-color: white; 
+                                border: 1px solid blue; border-radius: 50%; width: 24px; height: 24px; 
+                                display: flex; align-items: center; justify-content: center;">
+                        <b>{i+1}</b>
+                    </div>"""
+                )
+            ).add_to(m)
+
+        # Streamlit에 Folium 지도 렌더링
+        st_folium(m, width=700, height=600)
+
+        # 근처 명소 목록 표시 (지도와 같은 column에 배치, 번호 및 거리 포함)
+        if nearby_spots:
+            st.subheader("📍 놓치면 아쉬운 근처 명소 목록")
+            for i, spot_data in enumerate(nearby_spots):
+                st.markdown(f"**{i+1}. {spot_data['name']}** (거리: {spot_data['distance']})")
+
+        st.markdown(f"**😊 {selected_spot}와 주변 명소에서 즐거운 시간을 보내세요!**")
 
 else:
-    st.info("선택된 기업 중 주식 데이터를 성공적으로 가져온 기업이 없습니다. 상세 차트를 표시할 수 없습니다.")
+    st.warning("선택한 도시 또는 관광지 정보가 없습니다. 도시와 관광지를 선택해주세요.")
 
-st.markdown("---")
-st.info("데이터는 Yahoo Finance에서 가져오며, 지연될 수 있습니다. 시가총액 상위 기업 목록은 시간에 따라 변경될 수 있으므로, 최신 정보를 반영하려면 `TOP_10_COMPANIES` 딕셔너리를 업데이트해야 합니다.")
+st.sidebar.markdown("---")
+st.sidebar.info("이 가이드는 여러분의 즐거운 프랑스 여행을 돕기 위해 만들어졌습니다. 궁금한 점이 있다면 언제든지 문의해주세요!")
+st.sidebar.markdown("© 2025 프랑스 여행 가이드")
