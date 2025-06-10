@@ -4,10 +4,13 @@ import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 
+# Streamlit 페이지 설정
 st.set_page_config(layout="wide")
 
 st.title("글로벌 시총 Top 10 기업 주가 변화")
 
+# 글로벌 시총 Top 10 기업 목록 (티커: 이름)
+# 이 목록은 시간이 지남에 따라 변경될 수 있으므로, 필요 시 업데이트하세요.
 TOP_10_COMPANIES = {
     "AAPL": "Apple",
     "MSFT": "Microsoft",
@@ -21,115 +24,140 @@ TOP_10_COMPANIES = {
     "LLY": "Eli Lilly and Company",
 }
 
-@st.cache_data
+@st.cache_data # 데이터 캐싱 (성능 향상)
 def get_stock_data(ticker_symbol, start_date, end_date):
-    """지정된 티커의 주식 데이터를 가져옵니다."""
+    """
+    지정된 티커의 주식 데이터를 가져옵니다.
+    'Adj Close'가 없으면 'Close'를 사용하고, 캔들스틱 차트용 OHLC 데이터도 포함합니다.
+    """
     try:
+        # yfinance로 주식 데이터 다운로드 (진행 메시지 비활성화)
         data = yf.download(ticker_symbol, start=start_date, end=end_date, progress=False)
 
+        # 데이터가 비어있으면 None 반환
         if data.empty:
             return None
         
-        # 'Adj Close' 컬럼이 있으면 사용, 없으면 'Close' 컬럼을 사용합니다.
+        # 'Adj Close' 컬럼이 있으면 우선 사용, 없으면 'Close' 컬럼 사용
         if 'Adj Close' in data.columns and not data['Adj Close'].empty:
-            data['Price'] = data['Adj Close'] # 통합된 'Price' 컬럼 생성
+            data['Price'] = data['Adj Close']
         elif 'Close' in data.columns and not data['Close'].empty:
-            data['Price'] = data['Close'] # 통합된 'Price' 컬럼 생성
+            data['Price'] = data['Close']
         else:
-            return None # Price 컬럼을 만들 수 없으면 None 반환
+            # 주가 데이터(Price)를 만들 수 없으면 None 반환
+            return None
 
-        # 캔들스틱 차트에 필요한 컬럼들이 존재하는지 확인
-        required_ohlc_cols = ['Open', 'High', 'Low', 'Close']
-        if not all(col in data.columns and not data[col].empty for col in required_ohlc_cols):
-            # OHLV 데이터가 완전하지 않으면, 해당 컬럼들을 제거하거나 빈 값으로 둠
-            # 여기서는 단순히 캔들스틱 차트를 그리지 못하게 하고, Price 컬럼만 반환하도록 합니다.
-            # 하지만 나중에 캔들스틱 차트 표시 여부를 결정하기 위해 원본 데이터 프레임을 반환해야 함.
-            pass # 필요한 컬럼이 없어도 Price는 있으므로 일단 진행
-
-        # 필요한 모든 컬럼을 포함하는 DataFrame 반환
-        return data[['Open', 'High', 'Low', 'Close', 'Price']] if all(col in data.columns for col in ['Open', 'High', 'Low', 'Close']) else data[['Price']] # OHLV가 없으면 Price만 반환
+        # 캔들스틱 차트에 필요한 OHLC (Open, High, Low, Close) 컬럼이 모두 있는지 확인
+        ohlc_cols = ['Open', 'High', 'Low', 'Close']
+        if all(col in data.columns and not data[col].empty for col in ohlc_cols):
+            # OHLC와 Price 컬럼을 모두 포함하는 DataFrame 반환
+            return data[ohlc_cols + ['Price']]
+        else:
+            # OHLC 데이터가 불완전하면 Price 컬럼만 포함하는 DataFrame 반환
+            return data[['Price']]
         
-
     except Exception as e:
-        # st.error(f"티커 '{ticker_symbol}'의 데이터를 가져오는 중 예상치 못한 오류 발생: {e}")
+        # 데이터 가져오기 중 예외 발생 시 None 반환
+        # st.error(f"티커 '{ticker_symbol}'의 데이터를 가져오는 중 오류 발생: {e}") # 개발 시 주석 해제하여 디버깅
         return None
 
-# 날짜 설정
+# 최근 3년 데이터 기간 설정
 end_date = datetime.now()
-start_date = end_date - timedelta(days=3 * 365) # 3년 전
+start_date = end_date - timedelta(days=3 * 365) # 대략 3년 전
 
-st.write(f"기간: {start_date.strftime('%Y-%m-%d')} ~ {end_date.strftime('%Y-%m-%d')}")
+st.write(f"데이터 기간: **{start_date.strftime('%Y-%m-%d')}** ~ **{end_date.strftime('%Y-%m-%d')}**")
 
-# --- 희망 기업 선택 기능 추가 ---
-st.sidebar.header("기업 선택")
-selected_companies_names = st.sidebar.multiselect(
-    "주가 변화를 보고 싶은 기업을 선택하세요:",
-    options=list(TOP_10_COMPANIES.values()),
-    default=list(TOP_10_COMPANIES.values()) # 기본적으로 모든 기업 선택
-)
+# --- 사이드바: 기업 선택 체크박스 기능 ---
+st.sidebar.header("보고 싶은 기업 선택")
+selected_companies_names = []
+# 모든 TOP_10_COMPANIES에 대해 체크박스 생성 (기본값 True로 모두 선택)
+for ticker, name in TOP_10_COMPANIES.items():
+    if st.sidebar.checkbox(f"{name} ({ticker})", value=True, key=ticker):
+        selected_companies_names.append(name)
 
-# 선택된 기업의 티커 리스트 생성
+# 선택된 기업의 티커-이름 매핑 딕셔너리 생성
 selected_tickers = {ticker: name for ticker, name in TOP_10_COMPANIES.items() if name in selected_companies_names}
-# --- 희망 기업 선택 기능 끝 ---
+# --- 사이드바 끝 ---
 
-# 모든 기업의 데이터 가져오기
-all_stock_data_raw = {} # 개별 기업의 상세 데이터(Open, High, Low, Close, Price)를 저장
-all_price_data = pd.DataFrame() # 정규화된 가격 데이터(Price)만 저장
-
+# 데이터 로딩 상태 표시
 st.subheader("주식 데이터 가져오기 진행 중...")
-progress_bar_placeholder = st.empty()
-progress_bar = progress_bar_placeholder.progress(0)
-message_placeholder = st.empty()
+progress_bar_placeholder = st.empty() # 진행 바를 위한 플레이스홀더
+progress_bar = progress_bar_placeholder.progress(0) # 진행 바 초기화
+message_placeholder = st.empty() # 메시지를 위한 플레이스홀더
 
-for i, (ticker, name) in enumerate(selected_tickers.items()):
-    message_placeholder.text(f"데이터 가져오는 중: {name} ({ticker})...")
-    
-    data_df = get_stock_data(ticker, start_date, end_date)
-    
-    if data_df is not None and not data_df.empty:
-        all_stock_data_raw[name] = data_df
-        if 'Price' in data_df.columns:
-            all_price_data[name] = data_df['Price']
-    progress_bar.progress((i + 1) / len(selected_tickers))
+# 모든 기업의 데이터를 저장할 딕셔너리와 DataFrame 초기화
+all_stock_data_raw = {} # 개별 기업의 상세 데이터 (OHLC, Price)
+all_price_data = pd.DataFrame() # 라인 그래프용 정규화 가격 데이터
 
-message_placeholder.empty()
-progress_bar_placeholder.empty()
+# 선택된 기업이 있을 경우에만 데이터 로드 시도
+if selected_tickers:
+    for i, (ticker, name) in enumerate(selected_tickers.items()):
+        message_placeholder.text(f"데이터 가져오는 중: {name} ({ticker})...")
+        
+        data_df = get_stock_data(ticker, start_date, end_date)
+        
+        if data_df is not None and not data_df.empty:
+            all_stock_data_raw[name] = data_df
+            # Price 컬럼이 있는지 확인하고 all_price_data에 추가
+            if 'Price' in data_df.columns:
+                all_price_data[name] = data_df['Price']
+        
+        # 진행 바 업데이트
+        progress_bar.progress((i + 1) / len(selected_tickers))
 
-if not all_price_data.empty:
-    normalized_data = all_price_data.dropna(axis=1, how='all')
-    if not normalized_data.empty:
-        normalized_data = normalized_data / normalized_data.iloc[0] * 100
+    # 모든 데이터 로드 후 플레이스홀더 비우기
+    message_placeholder.empty()
+    progress_bar_placeholder.empty()
 
-        st.subheader("기간별 주가 변화 (초기 가격 100으로 정규화)")
+    # --- 메인 그래프: 정규화된 주가 변화 ---
+    if not all_price_data.empty:
+        # 모든 값이 NaN인 컬럼(데이터 로드 실패 기업) 제거 후 정규화
+        normalized_data = all_price_data.dropna(axis=1, how='all')
+        if not normalized_data.empty:
+            # 초기 가격을 100으로 정규화하여 변화율 비교
+            # 첫 번째 행으로 나누어 정규화. (loc[0] 대신 iloc[0] 사용)
+            normalized_data = normalized_data / normalized_data.iloc[0] * 100
 
-        fig = go.Figure()
-        for col in normalized_data.columns:
-            fig.add_trace(go.Scatter(x=normalized_data.index, y=normalized_data[col], mode='lines', name=col))
+            st.subheader("기간별 주가 변화 (초기 가격 100으로 정규화)")
 
-        fig.update_layout(
-            title="선택된 글로벌 시총 Top 기업 주가 변화",
-            xaxis_title="날짜",
-            yaxis_title="정규화된 주가 (시작점 100)",
-            hovermode="x unified",
-            legend_title="기업",
-            height=600
-        )
-        st.plotly_chart(fig, use_container_width=True)
+            fig = go.Figure()
+            for col in normalized_data.columns:
+                fig.add_trace(go.Scatter(x=normalized_data.index, y=normalized_data[col], mode='lines', name=col))
+
+            fig.update_layout(
+                title="선택된 글로벌 시총 Top 기업 주가 변화",
+                xaxis_title="날짜",
+                yaxis_title="정규화된 주가 (시작점 100)",
+                hovermode="x unified",
+                legend_title="기업",
+                height=600
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.warning("정규화할 유효한 주식 데이터가 없습니다. 선택된 기업의 데이터를 확인해주세요.")
+
     else:
-        st.warning("정규화할 유효한 주식 데이터가 없습니다. 선택된 기업의 데이터를 확인해주세요.")
+        st.warning("데이터를 가져오는 데 실패했거나, 선택된 기업의 유효한 주가 데이터가 없습니다. 티커 목록을 확인하거나 잠시 후 다시 시도해 주세요.")
 
 else:
-    st.error("데이터를 가져오는 데 실패했거나, 선택된 기업의 데이터가 없습니다. 티커 목록을 확인하거나 잠시 후 다시 시도해 주세요.")
+    # 선택된 기업이 없을 경우 메시지 표시
+    message_placeholder.empty()
+    progress_bar_placeholder.empty()
+    st.info("표시할 기업을 선택해주세요. 왼쪽 사이드바에서 기업을 선택할 수 있습니다.")
 
-st.markdown("---")
+st.markdown("---") # 시각적 구분선
+
+## 개별 기업 주가 상세 보기 (차트 형식 선택)
 st.subheader("개별 기업 주가 상세 보기")
 
-# 라인/영역 차트와 캔들스틱 차트를 모두 표시할 수 있도록 개선
+# 차트 형식 선택 라디오 버튼
 chart_type = st.radio(
     "어떤 형식으로 주가를 보시겠습니까?",
-    ('종가 라인 차트', '종가 영역 차트', '캔들스틱 차트 (OHLC 데이터 필요)')
+    ('종가 라인 차트', '종가 영역 차트', '캔들스틱 차트 (OHLC 데이터 필요)'),
+    index=0 # 기본값으로 '종가 라인 차트' 선택
 )
 
+# 데이터가 성공적으로 로드된 기업만 상세 보기 옵션에 포함
 available_for_details = list(all_stock_data_raw.keys())
     
 if available_for_details:
@@ -139,11 +167,13 @@ if available_for_details:
     )
 
     if selected_company_for_details:
+        # 선택된 기업의 티커 심볼 찾기
         ticker_symbol_for_details = [k for k, v in TOP_10_COMPANIES.items() if v == selected_company_for_details][0]
         
         st.write(f"**{selected_company_for_details} ({ticker_symbol_for_details})**")
         
-        detail_data = all_stock_data_raw.get(selected_company_for_details) # 캐시된 데이터 사용
+        # 캐시된 데이터(all_stock_data_raw)에서 상세 데이터 가져오기
+        detail_data = all_stock_data_raw.get(selected_company_for_details)
 
         if detail_data is not None and not detail_data.empty:
             if chart_type == '종가 라인 차트':
@@ -174,6 +204,7 @@ if available_for_details:
 
             elif chart_type == '캔들스틱 차트 (OHLC 데이터 필요)':
                 required_ohlc_cols = ['Open', 'High', 'Low', 'Close']
+                # 캔들스틱 차트를 그리는 데 필요한 모든 컬럼이 존재하고 비어있지 않은지 다시 확인
                 if all(col in detail_data.columns and not detail_data[col].empty for col in required_ohlc_cols):
                     fig_candlestick = go.Figure(data=[go.Candlestick(
                         x=detail_data.index,
@@ -187,12 +218,12 @@ if available_for_details:
                         title=f"{selected_company_for_details} 캔들스틱 차트",
                         xaxis_title="날짜",
                         yaxis_title="주가",
-                        xaxis_rangeslider_visible=False,
+                        xaxis_rangeslider_visible=False, # 범위 슬라이더 제거
                         height=500
                     )
                     st.plotly_chart(fig_candlestick, use_container_width=True)
                 else:
-                    st.warning(f"{selected_company_for_details} 의 캔들스틱 차트를 그리는 데 필요한 데이터(Open, High, Low, Close)가 불완전합니다. 다른 차트 형식을 선택하세요.")
+                    st.warning(f"{selected_company_for_details} 의 캔들스틱 차트를 그리는 데 필요한 데이터(Open, High, Low, Close)가 불완전합니다. 다른 차트 형식을 선택하거나, 이 기업의 OHLC 데이터가 Yahoo Finance에 없을 수 있습니다.")
 
         else:
             st.warning(f"{selected_company_for_details} 의 상세 차트 데이터를 가져올 수 없습니다. 다시 시도하거나 다른 기업을 선택하세요.")
@@ -200,5 +231,5 @@ if available_for_details:
 else:
     st.info("선택된 기업 중 주식 데이터를 성공적으로 가져온 기업이 없습니다. 상세 차트를 표시할 수 없습니다.")
 
-st.markdown("---")
+st.markdown("---") # 시각적 구분선
 st.info("데이터는 Yahoo Finance에서 가져오며, 지연될 수 있습니다. 시가총액 상위 기업 목록은 시간에 따라 변경될 수 있으므로, 최신 정보를 반영하려면 `TOP_10_COMPANIES` 딕셔너리를 업데이트해야 합니다.")
